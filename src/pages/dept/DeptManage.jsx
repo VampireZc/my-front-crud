@@ -2,16 +2,18 @@ import { EditOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons'
 import { App, Button, Card, Form, Input, Modal, Popconfirm, Space, Table } from 'antd'
 import dayjs from 'dayjs'
 import { useCallback, useEffect, useState } from 'react'
-import { addDept, deleteDept, listDepts } from '../../api/dept'
+import { addDept, deleteDept, getDept, listDepts, searchDept, updateDept } from '../../api/dept'
 
 const fmtTime = (v) => (v ? dayjs(v).format('YYYY-MM-DD HH:mm:ss') : '-')
 
-// 部门管理页：列表/删除/新增已联调；编辑仅 UI 预留，提交时提示接口未就绪
+// 部门管理页：列表/删除/新增/编辑已联调；点击编辑时按 ID 请求详情并回显名称
 export default function DeptManage() {
   const { message } = App.useApp()
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
+  const [detailLoading, setDetailLoading] = useState(false)
+  const [searchName, setSearchName] = useState('')
   const [editing, setEditing] = useState(null) // null=添加, record=编辑
   const [form] = Form.useForm()
 
@@ -32,24 +34,57 @@ export default function DeptManage() {
     fetchList()
   }, [fetchList])
 
-  const openModal = (record = null) => {
+  // 按部门名称搜索：调用 /depts/{name}；空关键词时回到完整列表
+  const handleSearch = async (value) => {
+    const name = (value ?? '').trim()
+    if (!name) {
+      fetchList()
+      return
+    }
+    setLoading(true)
+    try {
+      const res = await searchDept(name)
+      // 后端可能返回单对象或数组，统一归一化为数组
+      setData(Array.isArray(res) ? res : res ? [res] : [])
+    } catch {
+      // 失败提示已由 axios 拦截器统一处理
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const openModal = async (record = null) => {
     setEditing(record)
-    form.setFieldsValue({ name: record?.name ?? '' })
+    form.setFieldsValue({ name: '' })
     setModalOpen(true)
+    console.log(record);
+    
+    // 编辑：按 ID 请求详情，将返回的名称回显到输入框
+    if (record?.id != null) {
+      setDetailLoading(true)
+      try {
+        const res = await getDept(record.id)        
+        form.setFieldsValue({ name: res ?? '' })
+      } catch {
+        // 查询失败时退回行数据自带的名称兼容
+        form.setFieldsValue({ name: record.name ?? '' })
+      } finally {
+        setDetailLoading(false)
+      }
+    }
   }
 
   const handleSubmit = async () => {
     const values = await form.validateFields()
-    // 编辑：后端修改接口尚未就绪，先提示占位
-    if (editing) {
-      message.info(`部门修改接口待后端完善（${values.name}）`)
-      setModalOpen(false)
-      return
-    }
-    // 新增：真实联调
     try {
-      await addDept(values)
-      message.success(`部门「${values.name}」添加成功`)
+      if (editing) {
+        // 编辑：带上原记录 id 发起修改
+        await updateDept({ id: editing.id, ...values })
+        message.success(`部门「${values.name}」修改成功`)
+      } else {
+        await addDept(values)
+        message.success(`部门「${values.name}」添加成功`)
+      }
       setModalOpen(false)
       fetchList()
     } catch {
@@ -96,7 +131,26 @@ export default function DeptManage() {
       title="部门列表"
       extra={
         <Space>
-          <Button icon={<ReloadOutlined />} onClick={fetchList}>
+          <Input.Search
+            placeholder="按部门名称搜索"
+            allowClear
+            style={{ width: 200 }}
+            value={searchName}
+            onChange={(e) => {
+              const v = e.target.value
+              setSearchName(v)
+              // 清空（含点 ✕）时自动回到完整列表
+              if (!v) handleSearch('')
+            }}
+            onSearch={handleSearch}
+          />
+          <Button
+            icon={<ReloadOutlined />}
+            onClick={() => {
+              setSearchName('')
+              fetchList()
+            }}
+          >
             刷新
           </Button>
           <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
@@ -122,7 +176,7 @@ export default function DeptManage() {
               { max: 20, message: '部门名称不能超过 20 个字符' },
             ]}
           >
-            <Input placeholder="请输入部门名称" maxLength={20} />
+            <Input placeholder="请输入部门名称" maxLength={20} disabled={detailLoading} />
           </Form.Item>
         </Form>
       </Modal>
