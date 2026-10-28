@@ -2,11 +2,11 @@ import { EditOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons'
 import { App, Button, Card, Form, Input, Modal, Popconfirm, Space, Table } from 'antd'
 import dayjs from 'dayjs'
 import { useCallback, useEffect, useState } from 'react'
-import { listDepts } from '../../api/dept'
+import { addDept, deleteDept, listDepts } from '../../api/dept'
 
 const fmtTime = (v) => (v ? dayjs(v).format('YYYY-MM-DD HH:mm:ss') : '-')
 
-// 部门管理页：列表已联调；添加/编辑/删除仅 UI 预留，提交时提示接口未就绪
+// 部门管理页：列表/删除/新增已联调；编辑仅 UI 预留，提交时提示接口未就绪
 export default function DeptManage() {
   const { message } = App.useApp()
   const [data, setData] = useState([])
@@ -40,14 +40,31 @@ export default function DeptManage() {
 
   const handleSubmit = async () => {
     const values = await form.validateFields()
-    // TODO: 后端添加/修改接口就绪后，替换为 addDept / updateDept 请求并刷新列表
-    message.info(`部门${editing ? '修改' : '添加'}接口待后端完善（${values.name}）`)
-    setModalOpen(false)
+    // 编辑：后端修改接口尚未就绪，先提示占位
+    if (editing) {
+      message.info(`部门修改接口待后端完善（${values.name}）`)
+      setModalOpen(false)
+      return
+    }
+    // 新增：真实联调
+    try {
+      await addDept(values)
+      message.success(`部门「${values.name}」添加成功`)
+      setModalOpen(false)
+      fetchList()
+    } catch {
+      // 失败提示已由 axios 拦截器统一处理
+    }
   }
 
-  const handleDelete = (record) => {
-    // TODO: 后端删除接口就绪后，替换为 deleteDept(record.id) 请求并刷新列表
-    message.info(`部门删除接口待后端完善（${record.name}）`)
+  const handleDelete = async (record) => {
+    try {
+      await deleteDept(record.id)
+      message.success(`部门「${record.name}」删除成功`)
+      fetchList()
+    } catch {
+      // 失败提示已由 axios 拦截器统一处理
+    }
   }
 
   const columns = [
