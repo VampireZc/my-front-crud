@@ -1,8 +1,8 @@
 import request from './request'
 
-// 部门列表查询（后端已就绪，可联调）
-export function listDepts() {
-  return request.get('/depts')
+// 部门列表分页查询（后端已就绪，可联调；params: { page, pageSize }）
+export function listDepts(params) {
+  return request.get('/depts', { params })
 }
 
 // 删除部门（后端已就绪，可联调）

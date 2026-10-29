@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import MainLayout from '../layout/MainLayout'
 import DeptManage from '../pages/dept/DeptManage'
+import EmployeeManage from '../pages/employee/EmployeeManage'
 import LoginPage from '../pages/login/LoginPage'
 import RegisterPage from '../pages/login/RegisterPage'
 import Placeholder from '../pages/Placeholder'
@@ -15,7 +16,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="/dept" replace /> },
       { path: 'dept', element: <DeptManage /> },
-      { path: 'employee', element: <Placeholder title="员工管理" /> },
+      { path: 'employee', element: <EmployeeManage /> },
       { path: 'report', element: <Placeholder title="报表统计" /> },
       { path: 'log', element: <Placeholder title="日志管理" /> },
       { path: 'class', element: <Placeholder title="班级/学生管理" /> },
