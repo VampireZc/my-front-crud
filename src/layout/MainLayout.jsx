@@ -33,8 +33,8 @@ export default function MainLayout() {
     menuItems.find((m) => pathname.startsWith(m.key))?.label ?? '后台管理系统'
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Sider trigger={null} collapsible collapsed={collapsed}>
+    <Layout style={{ height: '100vh', overflow: 'hidden' }}>
+      <Sider trigger={null} collapsible collapsed={collapsed} style={{ height: '100%', overflowY: 'auto' }}>
         <div className="logo">{collapsed ? 'CRUD' : '后台管理系统'}</div>
         <Menu
           theme="dark"
@@ -44,7 +44,7 @@ export default function MainLayout() {
           onClick={({ key }) => navigate(key)}
         />
       </Sider>
-      <Layout>
+      <Layout style={{ height: '100%', minWidth: 0 }}>
         <Header className="app-header">
           <Space>
             <span
@@ -73,7 +73,7 @@ export default function MainLayout() {
             </Space>
           </Dropdown>
         </Header>
-        <Content className="app-content">
+        <Content className="app-content" style={{ flex: 1, overflowY: 'auto' }}>
           <Outlet />
         </Content>
       </Layout>

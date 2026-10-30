@@ -16,3 +16,14 @@ export function deleteEmps(ids) {
 export function addEmp(data) {
   return request.post('/emps', data)
 }
+
+// 根据 ID 查询员工（编辑回显，返回含 exprList）：GET /emps/exp/{id}
+// t 为时间戳防缓存参数：浏览器对固定 URL 的 GET 可能直接复用旧响应，导致编辑回显旧数据
+export function getEmp(id) {
+  return request.get(`/emps/exp/${id}`, { params: { t: Date.now() } })
+}
+
+// 修改员工：PUT /emps，body 为 JSON（需带 id）
+export function updateEmp(data) {
+  return request.put('/emps', data)
+}

@@ -1,4 +1,4 @@
-import { DeleteOutlined, PlusOutlined, ReloadOutlined, UserOutlined } from '@ant-design/icons'
+import { DeleteOutlined, EditOutlined, PlusOutlined, ReloadOutlined, UserOutlined } from '@ant-design/icons'
 import { App, Avatar, Button, Card, DatePicker, Form, Input, Popconfirm, Select, Space, Table } from 'antd'
 import dayjs from 'dayjs'
 import { useCallback, useEffect, useState } from 'react'
@@ -24,6 +24,9 @@ export default function EmployeeManage() {
   const [selectedRowKeys, setSelectedRowKeys] = useState([])
   const [filterForm] = Form.useForm()
   const [modalOpen, setModalOpen] = useState(false)
+  const [editingId, setEditingId] = useState(null)
+  // 每次打开弹窗自增：配合 key 强制 EmpFormModal 整体重挂载，得到全新空 store，避免跨记录残留
+  const [formNonce, setFormNonce] = useState(0)
 
   const loadData = useCallback(async () => {
     setLoading(true)
@@ -115,13 +118,27 @@ export default function EmployeeManage() {
     {
       title: '操作',
       key: 'action',
-      width: 90,
+      width: 140,
       render: (_, record) => (
-        <Popconfirm title={`确定删除员工「${record.name}」吗？`} onConfirm={() => handleDeleteOne(record)}>
-          <Button type="link" size="small" danger icon={<DeleteOutlined />}>
-            删除
+        <Space size={0}>
+          <Button
+            type="link"
+            size="small"
+            icon={<EditOutlined />}
+            onClick={() => {
+              setEditingId(record.id)
+              setFormNonce((n) => n + 1)
+              setModalOpen(true)
+            }}
+          >
+            编辑
           </Button>
-        </Popconfirm>
+          <Popconfirm title={`确定删除员工「${record.name}」吗？`} onConfirm={() => handleDeleteOne(record)}>
+            <Button type="link" size="small" danger icon={<DeleteOutlined />}>
+              删除
+            </Button>
+          </Popconfirm>
+        </Space>
       ),
     },
   ]
@@ -156,7 +173,15 @@ export default function EmployeeManage() {
         title="员工列表"
         extra={
           <Space>
-            <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalOpen(true)}>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => {
+                setEditingId(null)
+                setFormNonce((n) => n + 1)
+                setModalOpen(true)
+              }}
+            >
               新增员工
             </Button>
             <Button icon={<ReloadOutlined />} onClick={loadData}>
@@ -195,14 +220,18 @@ export default function EmployeeManage() {
         />
       </Card>
 
-      <EmpFormModal
-        open={modalOpen}
-        onCancel={() => setModalOpen(false)}
-        onSuccess={() => {
-          setModalOpen(false)
-          loadData()
-        }}
-      />
+      {modalOpen && (
+        <EmpFormModal
+          key={`${editingId ?? 'new'}-${formNonce}`}
+          open
+          editingId={editingId}
+          onCancel={() => setModalOpen(false)}
+          onSuccess={() => {
+            setModalOpen(false)
+            loadData()
+          }}
+        />
+      )}
     </Space>
   )
 }
