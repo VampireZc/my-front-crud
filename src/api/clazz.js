@@ -25,3 +25,8 @@ export function updateClazz(data) {
 export function deleteClazz(id) {
   return request.delete(`/clazzs/${id}`)
 }
+
+// 查询所有班级（供下拉使用，不分页）：GET /clazzs/list → [{ id, name, ... }]
+export function listAllClazzs() {
+  return request.get('/clazzs')
+}

@@ -11,3 +11,15 @@ export const GENDER_OPTIONS = [
 
 // 职位下拉选项（由 JOB_MAP 派生）
 export const JOB_OPTIONS = Object.entries(JOB_MAP).map(([k, v]) => ({ value: Number(k), label: v }))
+
+// 学历：1 初中, 2 高中, 3 大专, 4 本科, 5 硕士, 6 博士
+export const DEGREE_MAP = { 1: '初中', 2: '高中', 3: '大专', 4: '本科', 5: '硕士', 6: '博士' }
+
+// 学历下拉选项（由 DEGREE_MAP 派生，value 为数字传给后端）
+export const DEGREE_OPTIONS = Object.entries(DEGREE_MAP).map(([k, v]) => ({ value: Number(k), label: v }))
+
+// 是否是院校学生：1 是, 0 否
+export const IS_COLLEGE_OPTIONS = [
+  { value: 1, label: '是' },
+  { value: 0, label: '否' },
+]

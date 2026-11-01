@@ -6,6 +6,7 @@ import LoginPage from '../pages/login/LoginPage'
 import RegisterPage from '../pages/login/RegisterPage'
 import ReportManage from '../pages/report/ReportManage'
 import ClassManage from '../pages/class/ClassManage'
+import StudentManage from '../pages/student/StudentManage'
 import Placeholder from '../pages/Placeholder'
 
 const router = createBrowserRouter([
@@ -22,7 +23,7 @@ const router = createBrowserRouter([
       { path: 'report', element: <ReportManage /> },
       { path: 'log', element: <Placeholder title="日志管理" /> },
       { path: 'class', element: <ClassManage /> },
-      { path: 'student', element: <Placeholder title="学员管理" /> },
+      { path: 'student', element: <StudentManage /> },
     ],
   },
 ])
