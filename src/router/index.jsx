@@ -4,6 +4,8 @@ import DeptManage from '../pages/dept/DeptManage'
 import EmployeeManage from '../pages/employee/EmployeeManage'
 import LoginPage from '../pages/login/LoginPage'
 import RegisterPage from '../pages/login/RegisterPage'
+import ReportManage from '../pages/report/ReportManage'
+import ClassManage from '../pages/class/ClassManage'
 import Placeholder from '../pages/Placeholder'
 
 const router = createBrowserRouter([
@@ -17,9 +19,10 @@ const router = createBrowserRouter([
       { index: true, element: <Navigate to="/dept" replace /> },
       { path: 'dept', element: <DeptManage /> },
       { path: 'employee', element: <EmployeeManage /> },
-      { path: 'report', element: <Placeholder title="报表统计" /> },
+      { path: 'report', element: <ReportManage /> },
       { path: 'log', element: <Placeholder title="日志管理" /> },
-      { path: 'class', element: <Placeholder title="班级/学生管理" /> },
+      { path: 'class', element: <ClassManage /> },
+      { path: 'student', element: <Placeholder title="学员管理" /> },
     ],
   },
 ])

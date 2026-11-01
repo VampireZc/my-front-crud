@@ -27,3 +27,9 @@ export function getEmp(id) {
 export function updateEmp(data) {
   return request.put('/emps', data)
 }
+
+// 班主任/学科枚举：GET /emps/simple → { masterEnum:[{name,value}], subEnum:[{name,value}] }
+// masterEnum 用于班主任下拉（value=员工ID），subEnum 用于学科下拉（value=学科码）
+export function getEmpSimple() {
+  return request.get('/emps/simple')
+}

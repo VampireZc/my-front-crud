@@ -3,6 +3,7 @@ import {
   ApartmentOutlined,
   BarChartOutlined,
   FileTextOutlined,
+  IdcardOutlined,
   LoginOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -21,7 +22,8 @@ const menuItems = [
   { key: '/employee', icon: <TeamOutlined />, label: '员工管理' },
   { key: '/report', icon: <BarChartOutlined />, label: '报表统计' },
   { key: '/log', icon: <FileTextOutlined />, label: '日志管理' },
-  { key: '/class', icon: <SolutionOutlined />, label: '班级/学生管理' },
+  { key: '/class', icon: <SolutionOutlined />, label: '班级管理' },
+  { key: '/student', icon: <IdcardOutlined />, label: '学员管理' },
 ]
 
 export default function MainLayout() {
