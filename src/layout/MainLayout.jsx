@@ -4,7 +4,7 @@ import {
   BarChartOutlined,
   FileTextOutlined,
   IdcardOutlined,
-  LoginOutlined,
+  LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   SolutionOutlined,
@@ -13,10 +13,11 @@ import {
 } from '@ant-design/icons'
 import { useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { clearAuth, getUser } from '../utils/auth'
 
 const { Header, Sider, Content } = Layout
 
-// 六大管理模块（登录认证作为预留入口放在顶栏）
+// 各管理模块（顶栏展示当前登录用户并提供退出登录）
 const menuItems = [
   { key: '/dept', icon: <ApartmentOutlined />, label: '部门管理' },
   { key: '/employee', icon: <TeamOutlined />, label: '员工管理' },
@@ -30,6 +31,15 @@ export default function MainLayout() {
   const [collapsed, setCollapsed] = useState(false)
   const navigate = useNavigate()
   const { pathname } = useLocation()
+
+  // 顶栏当前登录用户：登录成功后写入 localStorage，这里读取展示
+  const user = getUser()
+  const displayName = user?.name || user?.username || '未登录'
+
+  const handleLogout = () => {
+    clearAuth()
+    navigate('/login', { replace: true })
+  }
 
   const currentTitle =
     menuItems.find((m) => pathname.startsWith(m.key))?.label ?? '后台管理系统'
@@ -61,21 +71,28 @@ export default function MainLayout() {
             menu={{
               items: [
                 {
-                  key: 'login',
-                  icon: <LoginOutlined />,
-                  label: '登录 / 注册（接口预留）',
-                  onClick: () => navigate('/login'),
+                  key: 'account',
+                  icon: <UserOutlined />,
+                  label: `账号：${user?.username ?? '-'}`,
+                  disabled: true,
+                },
+                { type: 'divider' },
+                {
+                  key: 'logout',
+                  icon: <LogoutOutlined />,
+                  label: '退出登录',
+                  onClick: handleLogout,
                 },
               ],
             }}
           >
             <Space style={{ cursor: 'pointer' }}>
               <Avatar icon={<UserOutlined />} />
-              <span>管理员</span>
+              <span>{displayName}</span>
             </Space>
           </Dropdown>
         </Header>
-        <Content className="app-content" style={{ flex: 1, overflowY: 'auto' }}>
+        <Content className="app-content" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
           <Outlet />
         </Content>
       </Layout>

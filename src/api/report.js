@@ -9,3 +9,13 @@ export function getEmpSexReport() {
 export function getEmpJobReport() {
   return request.get('/report/empJob')
 }
+
+// 班级人数统计：GET /report/clazzNum，复用员工职位结构 { jobList, dataList }（jobList 存班级名）→ 柱状图
+export function getClazzNumReport() {
+  return request.get('/report/clazzNum')
+}
+
+// 学历人数统计：GET /report/gender，复用员工性别结构 [{ name, value }] → 扇形图
+export function getDegreeReport() {
+  return request.get('/report/gender')
+}
